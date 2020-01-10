@@ -1,0 +1,22 @@
+[
+    {
+        "prompts" : ["a noun", "a verb", "an adjective", "an adverb"],
+        "story" : "Once upon a time, someone called %s %s a really %s  movie and it made him feel very %s."
+    },
+    {
+        "prompts" : ["a name", "an animal", "an adjective", "an adverb"],
+        "story" : "Once upon a time, there was a man called %s. The man had a big brown %s which he %s too %s"
+    },
+    {
+        "prompts" : ["a town", "an adjective", "a name", "an adverb"],
+        "story" : "In a town called %s there lived a %s woman called %s, she was very %s"
+    },
+    {
+        "prompts" : ["a noun", "a name", "an island", "an expensive stone"],
+        "story" : "The wise %s called %s went to %s searching for %s"
+    },
+    {
+        "prompts" : ["a noun", "a noun", "a pronoun", "an adverb"],
+        "story" : "When a %s loves a %s, %s becomes %s"
+    }
+]
