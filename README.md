@@ -22,7 +22,7 @@ The project is a simple react template for a PetCare service with three main sec
 
 ### React
 
-Header
+Header<br/>
 Sections List
 
 ### Godot
