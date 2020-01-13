@@ -13,6 +13,9 @@ func _ready():
 	DisplayText.text = "Welcome to loony loops, we are going to tell a story... "
 	check_playerText_size()
 	PlayerText.grab_focus()
+	
+	GodotGateway.connect("event", self, "_on_event")
+	GodotGateway.new_event("alert", "Message from Godot!")
 
 func set_current_story():
 	randomize()
@@ -29,6 +32,17 @@ func set_current_story():
 #	file.close()
 #	return data
 
+func _on_event(e_name:String, e_data) -> void:
+	match e_name:
+		"js_event":
+			show_message(e_data)
+		_:
+			prints("Unexpected event:", e_name, e_data)
+
+func show_message(msg:String) -> void:
+	$WindowDialog.dialog_text = msg
+	$WindowDialog.popup()
+	
 func _on_PlayerText_text_entered(new_text):
 	add_player_text()
 

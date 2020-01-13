@@ -19,6 +19,13 @@ config/name="Loony_lips"
 run/main_scene="res://LoonyLips.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+JS_API="*res://JS_API.gd"
+GodotGateway="*res://GodotGateway.gd"
+
 [rendering]
 
+quality/driver/driver_name="GLES2"
+vram_compression/import_etc=true
 environment/default_environment="res://default_env.tres"

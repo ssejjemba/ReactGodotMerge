@@ -93,7 +93,7 @@ class Game extends React.Component{
     componentDidMount(){
         //mount game object
         //this is the function godot generates when you export to html...
-        this.initialiseGameEngine()
+        this.initialiseGameEngine();
     }
 
     initialiseGameEngine(){

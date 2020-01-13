@@ -23,6 +23,9 @@ font_data = ExtResource( 3 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Background" type="TextureRect" parent="."]
 anchor_right = 1.0
@@ -77,6 +80,21 @@ margin_right = 976.0
 margin_bottom = 68.0
 custom_fonts/font = SubResource( 3 )
 text = "ok"
+
+[node name="WindowDialog" type="AcceptDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -150.0
+margin_top = -100.0
+margin_right = 150.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 300, 200 )
+window_title = "Message"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="StoryBook" type="Node" parent="."]
 
