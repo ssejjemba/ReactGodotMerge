@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import RunGameBtn from './GameStuff/RunGameBtn'
 
 const Container = styled.section`
     grid-column: sidebar-start / full-end 6;
@@ -81,11 +82,15 @@ const StatusNotice = styled.div`
     visibility: visible;
 `
 
-var engine = new Engine;
+var engine;
 var setStatusMode;
 var setStatusNotice;
 
 class Game extends React.Component{
+    state = {
+        isGameRunning: false
+    }
+
     constructor(props){
         super(props)
     }
@@ -93,10 +98,12 @@ class Game extends React.Component{
     componentDidMount(){
         //mount game object
         //this is the function godot generates when you export to html...
-        this.initialiseGameEngine()
+        // this.initialiseGameEngine();
     }
 
     initialiseGameEngine(){
+        engine = new Engine;
+
         const MAIN_PACK = 'index.pck';
         const INDETERMINATE_STATUS_STEP_MS = 100;
 
@@ -204,7 +211,7 @@ class Game extends React.Component{
         } else {
             setStatusMode('indeterminate');
             engine.setCanvas(canvas);
-            engine.startGame(MAIN_PACK).then(() => {
+            engine.startGame("index", MAIN_PACK).then(() => {
                 setStatusMode('hidden');
                 initializing = false;
             }, displayFailureNotice);
@@ -212,6 +219,14 @@ class Game extends React.Component{
     }
 
     render(){
+        if(this.state.isGameRunning) {
+            return this._getGame();
+        }else {
+            return this._getGameBtn();
+        }
+    }
+
+    _getGame() {
         return(
             <Container>
                 <canvas id='game-canvas'>
@@ -234,8 +249,110 @@ class Game extends React.Component{
                     <StatusNotice id='status-notice' className='godot' style={{display: 'none'}}></StatusNotice>
                 </Status>
             </Container>
-        )
+        );
     }
+
+    _getGameBtn() {
+        return(
+            <Container>
+                <RunGameBtn callback={this._runGame} />
+            </Container>
+        );
+    }
+
+    _runGame = () => {
+        this.setState({isGameRunning: true}, () => {
+            this._loadNeccessaryScripts(() => {
+                this.initialiseGameEngine();
+                this._initializeEventsCatcher();
+            })
+        });
+    }
+
+    _loadNeccessaryScripts = (callback) => {
+        const loader = new ScriptsLoader([
+            "index.js",
+            "gateways.js"
+        ], callback);
+    }
+
+    _initializeEventsCatcher = () => {
+        // Called 20 times per second
+        window.setInterval(() => {
+            this._fetchEvents();
+        }, 50);
+    }
+
+    _fetchEvents() {
+        if(gatewayToReact.hasEvent()) {		
+            do {
+                const event = gatewayToReact.popEvent();
+                this._onEvent(event.name, event.data);
+            }while(gatewayToReact.hasEvent());	
+        
+            gatewayToReact.clearEventsArray();
+        }
+    }
+
+    _onEvent = (eName, eData) => {
+        switch(eName) {
+            case 'ready':
+                this._createDemoEventButton();		
+                break;
+            case 'alert':
+                alert(eData);
+                break;
+            default:
+                console.log("Unexpected event:", eName, eData)
+        }
+    }
+
+    _createDemoEventButton = () => {
+        const btn = document.createElement('button');
+        btn.addEventListener('click', () => {
+            console.log("Clicking...");
+            gatewayToGodot.newEvent('js_event', 'This message comes from JS App');
+        })
+        
+        btn.innerHTML = 'Call JS event';
+        
+        // I know, that I should do this via css, but it's just demo
+        btn.style.position = 'fixed';
+        btn.style.right = 0;
+        btn.style.top = 0;
+        btn.style.zIndex = 10;
+        
+        const body = document.querySelector('body')
+        body.appendChild(btn)
+    }
+}
+
+class ScriptsLoader {
+    _scriptsToLoad = 0;
+    _loadedCounter = 0;
+    _onFinishedCallback = null;
+
+    constructor(scriptsUrlsArray, callback) {
+        this._scriptsToLoad = scriptsUrlsArray.length;
+        this._onFinishedCallback = callback;
+
+        scriptsUrlsArray.forEach((src) => {
+            this._loadScript(src)
+        });
+    }
+    
+    _loadScript = (scriptUrl) => {
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.onload = () => {
+            this._loadedCounter++;
+            if(this._loadedCounter >= this._scriptsToLoad) {
+                this._onFinishedCallback();
+            }
+        };
+
+        document.body.appendChild(script);
+    } 
 }
 
 export default Game;
