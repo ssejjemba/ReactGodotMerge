@@ -264,6 +264,7 @@ class Game extends React.Component{
         this.setState({isGameRunning: true}, () => {
             this._loadNeccessaryScripts(() => {
                 this.initialiseGameEngine();
+                this._initializeEventsCatcher();
             })
         });
     }
@@ -275,10 +276,55 @@ class Game extends React.Component{
         ], callback);
     }
 
-    _fetchEvents() {
-        
+    _initializeEventsCatcher = () => {
+        // Called 20 times per second
+        window.setInterval(() => {
+            this._fetchEvents();
+        }, 50);
     }
 
+    _fetchEvents() {
+        if(gatewayToReact.hasEvent()) {		
+            do {
+                const event = gatewayToReact.popEvent();
+                this._onEvent(event.name, event.data);
+            }while(gatewayToReact.hasEvent());	
+        
+            gatewayToReact.clearEventsArray();
+        }
+    }
+
+    _onEvent = (eName, eData) => {
+        switch(eName) {
+            case 'ready':
+                this._createDemoEventButton();		
+                break;
+            case 'alert':
+                alert(eData);
+                break;
+            default:
+                console.log("Unexpected event:", eName, eData)
+        }
+    }
+
+    _createDemoEventButton = () => {
+        const btn = document.createElement('button');
+        btn.addEventListener('click', () => {
+            console.log("Clicking...");
+            gatewayToGodot.newEvent('js_event', 'This message comes from JS App');
+        })
+        
+        btn.innerHTML = 'Call JS event';
+        
+        // I know, that I should do this via css, but it's just demo
+        btn.style.position = 'fixed';
+        btn.style.right = 0;
+        btn.style.top = 0;
+        btn.style.zIndex = 10;
+        
+        const body = document.querySelector('body')
+        body.appendChild(btn)
+    }
 }
 
 class ScriptsLoader {
