@@ -204,7 +204,7 @@ class Game extends React.Component{
         } else {
             setStatusMode('indeterminate');
             engine.setCanvas(canvas);
-            engine.startGame(MAIN_PACK).then(() => {
+            engine.startGame("index", MAIN_PACK).then(() => {
                 setStatusMode('hidden');
                 initializing = false;
             }, displayFailureNotice);
