@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import RunGameBtn from './GameStuff/RunGameBtn'
 
 const Container = styled.section`
     grid-column: sidebar-start / full-end 6;
@@ -81,11 +82,15 @@ const StatusNotice = styled.div`
     visibility: visible;
 `
 
-var engine = new Engine;
+var engine;
 var setStatusMode;
 var setStatusNotice;
 
 class Game extends React.Component{
+    state = {
+        isGameRunning: false
+    }
+
     constructor(props){
         super(props)
     }
@@ -93,10 +98,12 @@ class Game extends React.Component{
     componentDidMount(){
         //mount game object
         //this is the function godot generates when you export to html...
-        this.initialiseGameEngine();
+        // this.initialiseGameEngine();
     }
 
     initialiseGameEngine(){
+        engine = new Engine;
+
         const MAIN_PACK = 'index.pck';
         const INDETERMINATE_STATUS_STEP_MS = 100;
 
@@ -212,6 +219,14 @@ class Game extends React.Component{
     }
 
     render(){
+        if(this.state.isGameRunning) {
+            return this._getGame();
+        }else {
+            return this._getGameBtn();
+        }
+    }
+
+    _getGame() {
         return(
             <Container>
                 <canvas id='game-canvas'>
@@ -234,8 +249,64 @@ class Game extends React.Component{
                     <StatusNotice id='status-notice' className='godot' style={{display: 'none'}}></StatusNotice>
                 </Status>
             </Container>
-        )
+        );
     }
+
+    _getGameBtn() {
+        return(
+            <Container>
+                <RunGameBtn callback={this._runGame} />
+            </Container>
+        );
+    }
+
+    _runGame = () => {
+        this.setState({isGameRunning: true}, () => {
+            this._loadNeccessaryScripts(() => {
+                this.initialiseGameEngine();
+            })
+        });
+    }
+
+    _loadNeccessaryScripts = (callback) => {
+        const loader = new ScriptsLoader([
+            "index.js",
+            "gateways.js"
+        ], callback);
+    }
+
+    _fetchEvents() {
+        
+    }
+
+}
+
+class ScriptsLoader {
+    _scriptsToLoad = 0;
+    _loadedCounter = 0;
+    _onFinishedCallback = null;
+
+    constructor(scriptsUrlsArray, callback) {
+        this._scriptsToLoad = scriptsUrlsArray.length;
+        this._onFinishedCallback = callback;
+
+        scriptsUrlsArray.forEach((src) => {
+            this._loadScript(src)
+        });
+    }
+    
+    _loadScript = (scriptUrl) => {
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.onload = () => {
+            this._loadedCounter++;
+            if(this._loadedCounter >= this._scriptsToLoad) {
+                this._onFinishedCallback();
+            }
+        };
+
+        document.body.appendChild(script);
+    } 
 }
 
 export default Game;
