@@ -1,1 +1,1 @@
-You can view the project at [https://sejjemba.github.io/ReactGodotMerge/dist](https://sejjemba.github.io/ReactGodotMerge/dist)
+You can view the project at [https://ssejjemba.github.io/ReactGodotMerge/dist/](https://ssejjemba.github.io/ReactGodotMerge/dist/)
