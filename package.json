@@ -2,8 +2,8 @@
   "name": "test",
   "version": "1.0.0",
   "description": "A test app for integrating godot to react",
-  "main": "index.js",
-  "homepage": "http://sejjemba.github.io/ReactGodotMerge",
+  "main": "index.html",
+  "homepage": "https://sejjemba.github.io/ReactGodotMerge",
   "scripts": {
     "start": "webpack-dev-server --open --mode development",
     "build": "webpack --mode production",
